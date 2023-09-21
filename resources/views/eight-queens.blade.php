@@ -60,7 +60,7 @@
                                 for ($j = 0; $j < 8; $j++) {
                                     // Determine the background color based on row and column indices
                                     $backgroundColor = ($i + $j) % 2 == 0 ? '#9dbda9' : '#4b5d67';
-                                    echo "<div class='cell' style='background-color: $backgroundColor;'></div>";
+                                    echo "<div class='cell' id='cell_$i$j' name='cell_$i$j' data-index-zero='$i' data-index-one='$j' style='background-color: $backgroundColor;'></div>";
                                 }
                             }
                         @endphp
@@ -76,7 +76,6 @@
                     </div>
 
 
-
                 </div>
             </div>
         </div>
@@ -84,6 +83,7 @@
 
     <script type="module">
         $(document).ready(function() {
+
 
         });
     </script>
