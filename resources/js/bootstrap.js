@@ -1,10 +1,10 @@
-// Import Bootstrap CSS & JS
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.bundle.min.js";
-
 // Assign Popper to the window object
 import * as Popper from "@popperjs/core";
 window.Popper = Popper;
+
+// Import Bootstrap CSS & JS
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests

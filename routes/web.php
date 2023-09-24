@@ -25,9 +25,16 @@ Route::get('/', function () {
 });
 
 // Game navitgation routes
+// -----------------------
 
-Route::get('/knights-tour', [KnightsTourController::class, 'index'])->name('knights-tour');
-Route::get('/longest-sequence', [LongestSequenceController::class, 'index'])->name('longest-sequence');
-Route::get('/eight-queens', [EightQueensController::class, 'index'])->name('eight-queens');
-Route::get('/tic-tac-toe', [TicTacToeController::class, 'index'])->name('tic-tac-toe');
-Route::get('/shortest-path', [ShortestPathController::class, 'index'])->name('shortest-path');
+Route::get('/knights_tour', [KnightsTourController::class, 'index'])->name('knights_tour');
+Route::get('/longest_sequence', [LongestSequenceController::class, 'index'])->name('longest_sequence');
+Route::get('/eight_queens', [EightQueensController::class, 'index'])->name('eight_queens');
+Route::get('/tic_tac_toe', [TicTacToeController::class, 'index'])->name('tic_tac_toe');
+Route::get('/shortest_path', [ShortestPathController::class, 'index'])->name('shortest_path');
+
+// Eight Queens Routes
+// -------------------
+
+Route::post('/eight_queens/validate_answer', [EightQueensController::class, 'validateAnswer'])->name('validate_eight_queens_answer');
+Route::post('/eight_queens/submit_answer', [EightQueensController::class, 'submitAnswer'])->name('submit_eight_queens_answer');

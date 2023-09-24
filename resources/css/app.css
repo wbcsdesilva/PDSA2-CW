@@ -15,6 +15,11 @@
     }
 }
 
+/* Disable scroll */
+body {
+    overflow: hidden;
+}
+
 /* classes */
 .retro-bg-light {
     background-color: #bdf2d5;

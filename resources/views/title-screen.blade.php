@@ -39,27 +39,27 @@
 
     <div class="container">
 
-        <!-- Title -->
+        {{-- Title --}}
         <div class="row mb-5">
             <h1>Just 5 Quests</h1>
         </div>
 
-        <!-- Games -->
+        {{-- Games --}}
         <div class="row">
-            <h5 class="menu-item"><a class="nav-anchor" href="{{ route('knights-tour') }}">The Knight's Tour</a></h5>
+            <h5 class="menu-item"><a class="nav-anchor" href="{{ route('knights_tour') }}">The Knight's Tour</a></h5>
         </div>
         <div class="row">
-            <h5 class="menu-item"><a class="nav-anchor" href="{{ route('longest-sequence') }}">Longest Common Sequence</a>
+            <h5 class="menu-item"><a class="nav-anchor" href="{{ route('longest_sequence') }}">Longest Common Sequence</a>
             </h5>
         </div>
         <div class="row">
-            <h5 class="menu-item"><a class="nav-anchor" href="{{ route('eight-queens') }}">Eight Queens Puzzle</a></h5>
+            <h5 class="menu-item"><a class="nav-anchor" href="{{ route('eight_queens') }}">Eight Queens Puzzle</a></h5>
         </div>
         <div class="row">
-            <h5 class="menu-item"><a class="nav-anchor" href="{{ route('tic-tac-toe') }}">Tic Tac Toe</a></h5>
+            <h5 class="menu-item"><a class="nav-anchor" href="{{ route('tic_tac_toe') }}">Tic Tac Toe</a></h5>
         </div>
         <div class="row">
-            <h5 class="menu-item"><a class="nav-anchor" href="{{ route('shortest-path') }}">The Shortest Path</a></h5>
+            <h5 class="menu-item"><a class="nav-anchor" href="{{ route('shortest_path') }}">The Shortest Path</a></h5>
         </div>
 
     </div>
