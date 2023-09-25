@@ -23,7 +23,7 @@ class EightQueensServiceTest extends TestCase
     }
 
     // For manual solution inspection :
-    private function inspectSolution($solutionArray, $solutionToInspect)
+    private function inspectSolution($solutionToInspect, $solutionArray)
     {
         $solutionNumber = $solutionToInspect;
         $solutionArrayPosition = $solutionNumber - 1;
@@ -34,7 +34,7 @@ class EightQueensServiceTest extends TestCase
     // Solution visualization functions :
     private function visualizeSolution($solution, $solutionNo)
     {
-        echo "Eight Queens Puzzle - Solution # " . $solutionNo . " : \n";
+        echo "Eight Queens Puzzle - Solution #" . $solutionNo . " : \n";
 
         $board = $this->createEmptyBoard();
 

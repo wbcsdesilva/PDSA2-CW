@@ -170,7 +170,7 @@
             });
 
             $('#btn_submit').on('click', function() {
-                submitAnswer();
+                submitSolution();
             });
 
             $('.cell').each(function() {
@@ -223,30 +223,33 @@
 
             }
 
-            // submits player answer
-            function submitAnswer() {
+            // submits player solution
+            function submitSolution() {
 
                 setQueenPositions();
 
                 // axios post request to backend
 
-                axios.post('{{ route('validate_eight_queens_answer') }}', {
-                        playerAnswer: vm.queenPositions
+                axios.post('{{ route('validate_eight_queens_solution') }}', {
+                        playerSolution: vm.queenPositions
                     })
                     .then(response => {
-                        if (response.data.answerIsIncorrect) {
+                        if (response.data.solutionIsIncorrect) {
                             Swal.fire({
-                                title: 'Answer is wrong',
+                                title: 'Solution incorrect',
+                                text: 'Please try again',
                                 icon: 'error',
                             });
-                        } else if (response.data.answerAlreadyFound) {
+                        } else if (response.data.solutionAlreadyFound) {
                             Swal.fire({
-                                title: 'Answer is already found',
+                                title: 'Solution already found',
+                                text: 'A player previously found this solution',
                                 icon: 'warning',
                             });
                         } else {
+
                             Swal.fire({
-                                title: 'Answer is correct !',
+                                title: 'Solution is correct !',
                                 icon: 'success',
                                 input: 'text',
                                 inputPlaceholder: 'Enter your name',
@@ -254,22 +257,34 @@
                                 confirmButtonText: 'Continue',
                                 showLoaderOnConfirm: true,
                                 preConfirm: (inputValue) => {
-                                    return new Promise((resolve) => {
-                                        // Simulate an AJAX request
+                                    return new Promise((resolve, reject) => {
                                         setTimeout(() => {
-                                            if (inputValue === '') {
-                                                Swal.showValidationMessage(
-                                                    'Please enter your name !'
-                                                );
-                                            }
-                                            resolve();
+                                            axios.post(
+                                                    '{{ route('submit_eight_queens_solution') }}', {
+                                                        playerSolution: vm
+                                                            .queenPositions,
+                                                        playerName: inputValue
+                                                    })
+                                                .then(response => {
+                                                    resolve(response.data);
+                                                    console.log(response.data
+                                                        .message);
+                                                })
+                                                .catch(error => {
+                                                    reject(
+                                                        'Error: Unable to save player data :('
+                                                    );
+                                                });
                                         }, 1000);
                                     });
                                 }
                             }).then((result) => {
                                 if (result.isConfirmed) {
-                                    Swal.fire('Your name: ' + result.value);
+                                    Swal.fire('Done', 'Your solution was saved successfully',
+                                    'success');
                                 }
+                            }).catch((error) => {
+                                Swal.fire('Oops', 'Your solution could not be saved', 'error');
                             });
                         }
                     })

@@ -36,5 +36,5 @@ Route::get('/shortest_path', [ShortestPathController::class, 'index'])->name('sh
 // Eight Queens Routes
 // -------------------
 
-Route::post('/eight_queens/validate_answer', [EightQueensController::class, 'validateAnswer'])->name('validate_eight_queens_answer');
-Route::post('/eight_queens/submit_answer', [EightQueensController::class, 'submitAnswer'])->name('submit_eight_queens_answer');
+Route::post('/eight_queens/validate_solution', [EightQueensController::class, 'validateSolution'])->name('validate_eight_queens_solution');
+Route::post('/eight_queens/submit_solution', [EightQueensController::class, 'submitSolution'])->name('submit_eight_queens_solution');
