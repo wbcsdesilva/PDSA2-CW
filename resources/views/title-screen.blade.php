@@ -49,7 +49,8 @@
             <h5 class="menu-item"><a class="nav-anchor" href="{{ route('knights_tour') }}">The Knight's Tour</a></h5>
         </div>
         <div class="row">
-            <h5 class="menu-item"><a class="nav-anchor" href="{{ route('longest_sequence') }}">Longest Common Sequence</a>
+            <h5 class="menu-item"><a class="nav-anchor" href="{{ route('longest_common_sequence') }}">Longest Common
+                    Sequence</a>
             </h5>
         </div>
         <div class="row">

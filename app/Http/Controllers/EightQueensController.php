@@ -16,7 +16,7 @@ class EightQueensController extends Controller
         return view('eight-queens');
     }
 
-    public function validateSolution(Request $request)
+    public function assessSolution(Request $request)
     {
         $playerSolution = $this->formatPlayerSolution($request->playerSolution);
 
@@ -29,7 +29,7 @@ class EightQueensController extends Controller
                 return response()->json(['solutionAlreadyFound' => true], 200);
             }
         } else {
-            return response()->json(['solutionIsIncorrect' => true], 200);
+            return response()->json(['solutionIsCorrect' => false], 200);
         }
     }
 
@@ -58,7 +58,7 @@ class EightQueensController extends Controller
         } catch (ValidationException $e) {
             return response()->json(['message' => $e->getMessage()], 400);
         } catch (Exception $e) {
-            return response()->json(['message' => 'Something went wrong'], 500);
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 

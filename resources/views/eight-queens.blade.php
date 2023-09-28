@@ -2,25 +2,21 @@
 
 @section('content')
     <style>
-        /* Adjust chessboard size */
         .chessboard-container {
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            /* Ensure it takes full viewport height */
         }
 
         .chessboard {
             width: 100%;
             height: 100%;
             padding: 3px;
-            /* Add some padding to separate cells */
             display: flex;
             flex-wrap: wrap;
         }
 
-        /* Style the chessboard grid */
         .chessboard .cell {
             width: 12.5%;
             height: 12.5%;
@@ -46,15 +42,12 @@
             transform: scale(1.1);
         }
 
-
         .chessboard .cell:nth-child(odd) {
             background-color: #9dbda9;
-            /* White tiles */
         }
 
         .chessboard .cell:nth-child(even) {
             background-color: #4b5d67;
-            /* Black tiles */
         }
 
         .queen {
@@ -71,7 +64,6 @@
             color: #bdf2d5;
         }
 
-        /* Style the sidebar */
         .sidebar {
             padding: 20px;
         }
@@ -79,7 +71,7 @@
 
     <div class="container-fluid">
 
-        {{-- vue app div --}}
+        {{-- vue app mount --}}
         <div id="app">
 
             <div class="row">
@@ -92,7 +84,6 @@
                             @php
                                 for ($i = 0; $i < 8; $i++) {
                                     for ($j = 0; $j < 8; $j++) {
-                                        // Determine the background color based on row and column indices
                                         $backgroundColor = ($i + $j) % 2 == 0 ? '#9dbda9' : '#4b5d67';
                                         echo "<div class='cell' id='cell_$i$j' name='cell_$i$j' data-index-zero='$i' data-index-one='$j' style='background-color: $backgroundColor;'></div>";
                                     }
@@ -141,14 +132,6 @@
                     queensLeft: 8,
                     queenPositions: []
                 };
-            },
-            methods: {
-                openModal() {
-                    this.playerSubmissionModalVisibility = true;
-                },
-                closeModal() {
-                    this.playerSubmissionModalVisibility = false;
-                }
             }
         });
 
@@ -177,6 +160,9 @@
                 $(this).data('backgroundColor', $(this).css('background-color'));
             });
 
+
+            // functions
+            // ---------
 
             // places a queen on a selected cell
             function placeQueen(cell) {
@@ -228,9 +214,7 @@
 
                 setQueenPositions();
 
-                // axios post request to backend
-
-                axios.post('{{ route('validate_eight_queens_solution') }}', {
+                axios.post('{{ route('assess_eight_queens_solution') }}', {
                         playerSolution: vm.queenPositions
                     })
                     .then(response => {
@@ -254,13 +238,13 @@
                                 input: 'text',
                                 inputPlaceholder: 'Enter your name',
                                 showCancelButton: true,
-                                confirmButtonText: 'Continue',
+                                confirmButtonText: 'Save',
                                 showLoaderOnConfirm: true,
                                 preConfirm: (inputValue) => {
                                     return new Promise((resolve, reject) => {
                                         setTimeout(() => {
                                             axios.post(
-                                                    '{{ route('submit_eight_queens_solution') }}', {
+                                                    '{{ route('submit_lcs_solution') }}', {
                                                         playerSolution: vm
                                                             .queenPositions,
                                                         playerName: inputValue
@@ -280,17 +264,18 @@
                                 }
                             }).then((result) => {
                                 if (result.isConfirmed) {
-                                    Swal.fire('Done', 'Your solution was saved successfully',
-                                    'success');
+                                    Swal.fire('Done', 'Your player data was saved successfully',
+                                        'success').then(() => {
+                                        window.location.reload();
+                                    });
                                 }
                             }).catch((error) => {
-                                Swal.fire('Oops', 'Your solution could not be saved', 'error');
+                                Swal.fire('Oops', 'Your player data could not be saved', 'error');
                             });
                         }
                     })
                     .catch(error => {
                         console.error(error);
-                        // Handle errors
                     });
             }
 
