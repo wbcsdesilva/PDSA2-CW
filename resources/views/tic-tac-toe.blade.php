@@ -101,7 +101,7 @@
             });
 
 
-            // make a move on the baord
+            // makes a move on the baord
             function makeMove(cell) {
                 let row = $(cell).data('row-index');
                 let col = $(cell).data('col-index');

@@ -8,6 +8,7 @@ use App\Http\Controllers\KnightsTourController;
 use App\Http\Controllers\LCSController;
 use App\Http\Controllers\ShortestPathController;
 use App\Http\Controllers\TicTacToeController;
+use App\Services\ShortestPathService;
 use App\Services\TicTacToeService;
 
 /*
@@ -51,3 +52,9 @@ Route::post('/longest_common_sequence/submit_solution', [LCSController::class, '
 // ------------------
 
 Route::post('/tic_tac_toe/make_move', [TicTacToeController::class, 'makeMove'])->name('make_move');
+
+
+// Shortest Path routes
+// --------------------
+
+Route::post('/longest_common_sequence/assess_solution', [ShortestPathController::class, 'assessSolution'])->name('assess_shortest_path_solution');

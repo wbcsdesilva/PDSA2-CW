@@ -5,8 +5,6 @@ namespace App\Services;
 // Tic Tac Toe Service
 // -------------------
 
-// TODO: Do some cleaning up
-
 class TicTacToeService
 {
 

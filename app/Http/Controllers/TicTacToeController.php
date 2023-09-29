@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Services\TicTacToeService;
 use Illuminate\Http\Request;
 
-// TODO: Do some cleaning up
 
 class TicTacToeController extends Controller
 {
@@ -24,7 +23,8 @@ class TicTacToeController extends Controller
 
     public function makeMove(Request $request)
     {
-
+        // FIXME: Board is getting reinitialized when a new request comes to this side, find out why
+        // Current workaround: Getting and setting the board from the front end
         $this->ticTacToeService->setBoard($request->input('board'));
 
         $player = 'X';
