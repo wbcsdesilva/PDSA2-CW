@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->string('player_name');
             $table->unsignedBigInteger('solution_id');
-            $table->dateTime('submitted_on')->default(DB::raw('CURRENT_TIMESTAMP'));;
+            $table->dateTime('submitted_on')->default(DB::raw('CURRENT_TIMESTAMP'));
 
             // foreign keys :
             $table->foreign('solution_id')->references('id')->on('eight_queens_solutions');

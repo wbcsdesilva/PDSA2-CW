@@ -10,6 +10,7 @@ class EightQueensService
 
     private $solutions = [];
 
+    // recursively backtrack to find a solution
     public function solve()
     {
         $this->backtrack(0, []);
@@ -18,7 +19,9 @@ class EightQueensService
 
     private function backtrack($row, $queens)
     {
+        // base case
         if ($row === 8) {
+            // append the queens positions when a solution is found
             $this->solutions[] = $queens;
             return;
         }
@@ -32,7 +35,8 @@ class EightQueensService
         }
     }
 
-    private function isValidPlacement($queens, $row, $col)
+    // check if the queens threaten each other (checks columns and diagonals)
+    public function isValidPlacement($queens, $row, $col)
     {
         foreach ($queens as $queen) {
             list($queenRow, $queenCol) = $queen;

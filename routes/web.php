@@ -8,6 +8,7 @@ use App\Http\Controllers\KnightsTourController;
 use App\Http\Controllers\LCSController;
 use App\Http\Controllers\ShortestPathController;
 use App\Http\Controllers\TicTacToeController;
+use App\Services\KnightsTourService;
 use App\Services\ShortestPathService;
 use App\Services\TicTacToeService;
 
@@ -52,9 +53,17 @@ Route::post('/longest_common_sequence/submit_solution', [LCSController::class, '
 // ------------------
 
 Route::post('/tic_tac_toe/make_move', [TicTacToeController::class, 'makeMove'])->name('make_move');
+Route::post('/tic_tac_toe/submit_game', [TicTacToeController::class, 'submitGame'])->name('submit_tic_tac_toe_game');
 
 
-// Shortest Path routes
+// Shortest Path Routes
 // --------------------
 
-Route::post('/longest_common_sequence/assess_solution', [ShortestPathController::class, 'assessSolution'])->name('assess_shortest_path_solution');
+Route::post('/shortest_path/assess_solution', [ShortestPathController::class, 'assessSolution'])->name('assess_shortest_path_solution');
+Route::post('/shortest_path/submit_solution', [ShortestPathController::class, 'submitSolution'])->name('submit_shortest_path_solution');
+
+// Knights Tour Routes
+// -------------------
+
+Route::post('/knights_tour/find_tour', [KnightsTourController::class, 'findTour'])->name('find_knights_tour');
+Route::post('/knights_tour/submit_solution', [KnightsTourController::class, 'submitSolution'])->name('submit_knights_tour_solution');

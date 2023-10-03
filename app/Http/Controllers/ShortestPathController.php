@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Services\ShortestPathService;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class ShortestPathController extends Controller
 {
@@ -25,18 +27,49 @@ class ShortestPathController extends Controller
 
     public function assessSolution(Request $request)
     {
-        $startCity = $request->input('startCity');
-        $graph = $request->input('distanceGraph');
+        try {
 
-        // FIXME: Same issue as the tic-tac-toe board. Find out why the graph is getting re-initialized
-        // Current workaround: Getting and setting the graph from the front end again
-        $this->shortestPathService->setGraph($graph);
+            // Validate
+            $request->validate([
+                'cityDistances' => 'required',
+                'cityPaths' => 'required',
+            ]);
 
-        $this->findShortestPath($startCity);
+            $startCity = $request->input('startCity');
+            $graph = $request->input('distanceGraph');
+
+            $cityDistances = $request->input('cityDistances');
+            $cityPaths = $request->input('cityPaths');
+
+            $this->shortestPathService->setGraph($graph);
+
+            $correctSolution = $this->findShortestPath($startCity);
+
+            $allDistancesCorrect = $this->compareCityDistances($cityDistances, $correctSolution[0]);
+            $allPathsCorrect = $this->compareCityPaths($cityPaths, $correctSolution[1]);
+
+            if ($allDistancesCorrect && $allPathsCorrect) {
+                return response()->json(['solutionIsCorrect' => true], 200);
+            } else {
+                return response()->json(['solutionIsCorrect' => false], 200);
+            }
+        } catch (ValidationException $e) {
+            return response()->json(['solutionIsInvalid' => true, 'message' => $e->getMessage()], 400);
+        } catch (Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
     }
 
     public function submitSolution(Request $request)
     {
+        try {
+
+            return response()->json(['message' => 'Solution submission successful'], 200);
+        } catch (ValidationException $e) {
+            return response()->json(['message' => $e->getMessage()], 400);
+        } catch (Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
     }
 
     private function findShortestPath($startCity)
@@ -47,12 +80,6 @@ class ShortestPathController extends Controller
         $bellmanFordShortestPath = $this->shortestPathService->bellmanFordShortestPath($startCity);
 
         $graph = $this->shortestPathService->getGraph();
-
-        // The algorithms are working properly,
-        // The issue is the graphs being mismatching, just like from tic-tac-toe
-        // take the graph from the front-end and put it here
-
-        dd($startCity, $dijkstraShortestPath, $bellmanFordShortestPath, $graph);
 
         return response()->json([
             'start_city' => $startCity,

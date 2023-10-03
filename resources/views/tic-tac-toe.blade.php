@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-    {{-- custom styles --}}
     <style>
         body,
         html {

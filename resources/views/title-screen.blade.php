@@ -1,9 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    {{-- custom styles --}}
     <style>
-        /* Custom styles to center the container */
         body,
         html {
             height: 100%;
@@ -25,13 +23,11 @@
         .menu-item {
             cursor: pointer;
             transition: transform 0.3s;
-            /* Add a smooth transition */
         }
 
         .menu-item:hover {
             animation: blink 0.8s infinite;
             transform: scale(1.1);
-            /* Increase size slightly on hover */
         }
     </style>
 

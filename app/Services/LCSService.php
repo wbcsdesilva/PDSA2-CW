@@ -13,10 +13,10 @@ class LCSService
         $m = strlen($str1);
         $n = strlen($str2);
 
-        // Create a 2D array to store LCS lengths
+        // 2D array to store LCS lengths
         $dp = array_fill(0, $m + 1, array_fill(0, $n + 1, 0));
 
-        // Fill the dp table using dynamic programming
+        // filling the dp table using dynamic programming
         for ($i = 1; $i <= $m; $i++) {
             for ($j = 1; $j <= $n; $j++) {
                 if ($str1[$i - 1] == $str2[$j - 1]) {
@@ -27,7 +27,7 @@ class LCSService
             }
         }
 
-        // Retrieve the LCS from the dp table
+        // getting LCS from the dp table
         $lcs = '';
         $i = $m;
         $j = $n;

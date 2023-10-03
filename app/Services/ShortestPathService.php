@@ -47,7 +47,7 @@ class ShortestPathService
     public function dijkstraShortestPath($startCity)
     {
         $distances = [];
-        $previousNodes = []; // Track the previous node for each node in the shortest path
+        $previousNodes = []; // for path tracking
         $visited = [];
         $cities = array_keys($this->graph);
 
@@ -108,7 +108,7 @@ class ShortestPathService
     public function bellmanFordShortestPath($startCity)
     {
         $distances = [];
-        $previousNodes = []; // Track the previous node for each node in the shortest path
+        $previousNodes = []; // for path tracking
         $cities = array_keys($this->graph);
 
         foreach ($cities as $city) {
@@ -119,7 +119,6 @@ class ShortestPathService
 
         $start_time = microtime(true);
 
-        // Relax edges repeatedly
         for ($i = 0; $i < count($cities) - 1; $i++) {
             foreach ($cities as $city) {
                 foreach ($this->graph[$city] as $neighbor => $weight) {

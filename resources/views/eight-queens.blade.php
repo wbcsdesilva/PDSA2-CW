@@ -196,7 +196,7 @@
             }
 
 
-            // sets queen position data
+            // sets queen position data, into our Vue app.
             function setQueenPositions() {
 
                 vm.queenPositions = [];
@@ -244,7 +244,7 @@
                                     return new Promise((resolve, reject) => {
                                         setTimeout(() => {
                                             axios.post(
-                                                    '{{ route('submit_lcs_solution') }}', {
+                                                    '{{ route('submit_eight_queens_solution') }}', {
                                                         playerSolution: vm
                                                             .queenPositions,
                                                         playerName: inputValue

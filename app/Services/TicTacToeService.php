@@ -147,6 +147,7 @@ class TicTacToeService
         return $bestMove;
     }
 
+    // recursion of the minimax function simulates the tree
     protected function minimax($depth, $maximizingPlayer)
     {
         $scores = [

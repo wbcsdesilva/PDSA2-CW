@@ -167,10 +167,20 @@
                         distanceGraph: vm.distanceGraph
                     })
                     .then(response => {
-
+                        if (!response.data.solutionIsCorrect) {
+                            Swal.fire({
+                                title: 'Solution incorrect',
+                                text: 'Please try again',
+                                icon: 'error',
+                            });
+                        }
                     })
                     .catch(error => {
-                        console.error(error);
+                        Swal.fire({
+                            title: 'Invalid solution!',
+                            text: 'Please make sure you enter all required data',
+                            icon: 'error',
+                        });
                     });
             }
 

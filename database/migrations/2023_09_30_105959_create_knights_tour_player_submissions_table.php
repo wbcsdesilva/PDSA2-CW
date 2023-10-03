@@ -12,12 +12,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('lcs_player_submissions', function (Blueprint $table) {
+        Schema::create('knights_tour_player_submissions', function (Blueprint $table) {
             $table->id();
             $table->string('player_name');
-            $table->string('string1');
-            $table->string('string2');
-            $table->string('solution');
+            $table->string('knight_start_position');
+            $table->string('tour');
             $table->dateTime('submitted_on')->default(DB::raw('CURRENT_TIMESTAMP'));
         });
     }
@@ -27,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('lcs_player_submissions');
+        Schema::dropIfExists('knights_tour_player_submissions');
     }
 };

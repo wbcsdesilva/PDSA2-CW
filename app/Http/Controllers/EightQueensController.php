@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\EightQueensPlayerSubmission;
 use App\Models\EightQueensSolution;
 use Exception;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
@@ -18,18 +19,36 @@ class EightQueensController extends Controller
 
     public function assessSolution(Request $request)
     {
-        $playerSolution = $this->formatPlayerSolution($request->playerSolution);
+        try {
 
-        $matchingCorrectSolution = $this->findMatchingSolution($playerSolution);
+            // validate
+            $request->validate([
+                'playerSolution' => 'required|array|size:8',
+            ]);
 
-        if ($matchingCorrectSolution) {
-            if ($matchingCorrectSolution->found === 0) {
-                return response()->json(['solutionAlreadyFound' => false], 200);
+            $playerSolution = $this->formatPlayerSolution($request->playerSolution);
+
+            $matchingCorrectSolution = $this->findMatchingSolution($playerSolution);
+
+            $allSolutionsIdentified = $this->allSolutionsIdentified();
+
+            if ($matchingCorrectSolution) {
+                if ($matchingCorrectSolution->found === 0) {
+                    return response()->json(['solutionAlreadyFound' => false], 200);
+                } else  if ($matchingCorrectSolution->found === 1 && $allSolutionsIdentified) {
+                    $this->removeAllSolutionFlags();
+                    return response()->json(['solutionAlreadyFound' => false], 200);
+                } else {
+                    $this->removeAllSolutionFlags();
+                    return response()->json(['solutionAlreadyFound' => true], 200);
+                }
             } else {
-                return response()->json(['solutionAlreadyFound' => true], 200);
+                return response()->json(['solutionIsIncorrect' => true], 200);
             }
-        } else {
-            return response()->json(['solutionIsCorrect' => false], 200);
+        } catch (ValidationException $e) {
+            return response()->json(['type' => 'VALIDATION_EXCEPTION', 'message' => $e->getMessage()], 400);
+        } catch (Exception $e) {
+            return response()->json(['type' => 'GENERAL_EXCEPTION', 'message' => $e->getMessage()], 500);
         }
     }
 
@@ -38,9 +57,10 @@ class EightQueensController extends Controller
 
         try {
 
+            // validate
             $request->validate([
-                'playerName' => 'required',
-                'playerSolution' => 'required',
+                'playerName' => 'required|string|max:255|regex:/^[A-Za-z0-9_]+$/',
+                'playerSolution' => 'required|array|size:8',
             ]);
 
             $playerName = $request->input('playerName');
@@ -56,9 +76,11 @@ class EightQueensController extends Controller
 
             return response()->json(['message' => 'Solution submission successful'], 200);
         } catch (ValidationException $e) {
-            return response()->json(['message' => $e->getMessage()], 400);
+            return response()->json(['type' => 'VALIDATION_EXCEPTION', 'message' => $e->getMessage()], 400);
+        } catch (QueryException $e) {
+            return response()->json(['type' => 'QUERY_EXCEPTION', 'message' => $e->getMessage()], 500);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json(['type' => 'GENERAL_EXCEPTION', 'message' => $e->getMessage()], 500);
         }
     }
 
@@ -97,5 +119,13 @@ class EightQueensController extends Controller
     {
         $solution->found = 1;
         $solution->save();
+    }
+
+    private function allSolutionsIdentified()
+    {
+    }
+
+    private function removeAllSolutionFlags()
+    {
     }
 }

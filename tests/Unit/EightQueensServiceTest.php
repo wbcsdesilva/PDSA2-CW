@@ -12,15 +12,26 @@ class EightQueensServiceTest extends TestCase
 {
     public function testSolutionGeneration()
     {
-        // Note to self : The Eight Queens puzzle has 92 distinct solutions.
-        // So our solve method should return 92 solutions
-        // If it does, it passes the test
+        // see if the solve function generates all 92 solutions
 
         $eightQueensService = new EightQueensService();
         $solutions = $eightQueensService->solve();
 
         $this->assertCount(92, $solutions);
     }
+
+    // public function testValidPlacement()
+    // {
+    //     $eightQueensService = new EightQueensService();
+
+    //     // Test a valid placement (no threatening)
+    //     $validQueens = [[0, 0], [1, 2], [2, 4], [3, 6], [4, 1], [5, 3], [6, 5], [7, 7]];
+    //     $this->assertTrue($eightQueensService->isValidPlacement($validQueens, 7, 7));
+
+    //     // Test an invalid placement (queens threaten each other)
+    //     $invalidQueens = [[0, 0], [1, 2], [2, 4], [3, 6], [4, 1], [5, 3], [6, 5], [7, 7]];
+    //     $this->assertFalse($eightQueensService->isValidPlacement($invalidQueens, 5, 2));
+    // }
 
     // For manual solution inspection :
     private function inspectSolution($solutionToInspect, $solutionArray)
