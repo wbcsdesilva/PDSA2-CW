@@ -28,6 +28,21 @@ class KnightsTourController extends Controller
         return view('knights-tour', compact('tour', 'chessboard', 'knightStart'));
     }
 
+    public function assessSolution(Request $request)
+    {
+        try {
+
+            $playerSolution = $request->input('playerSolution');
+            $validSolution = $this->areAllSquaresMarked($playerSolution);
+
+            return response()->json(['solutionIsCorrect' => true], 200);
+        } catch (ValidationException $e) {
+            return response()->json(['solutionIsInvalid' => true, 'message' => $e->getMessage()], 400);
+        } catch (Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
+
     public function submitSolution(Request $request)
     {
         try {
@@ -39,12 +54,12 @@ class KnightsTourController extends Controller
 
             $playerName = $request->input('playerName');
             $knightStartPosition = $this->formatStartPosition($request->input('knightStart'));
-            $tour = $this->formatTour($request->input('tour'));
+            $playerSolution = $this->formatTour($request->input('playerSolution'));
 
             KnightsTourPlayerSubmission::create([
                 'player_name' => $playerName,
                 'knight_start_position' => $knightStartPosition,
-                'tour' => $tour,
+                'tour' => $playerSolution,
             ]);
 
             return response()->json(['message' => 'Solution submission successful'], 200);
@@ -57,13 +72,42 @@ class KnightsTourController extends Controller
         }
     }
 
-    public function formatTour()
+    public function formatTour($tour)
     {
-        // formats the tour into to make it database ready
+        $formattedTour = '';
+
+        if (!is_array($tour) || empty($tour)) {
+            return $formattedTour;
+        }
+
+        foreach ($tour as $move) {
+            if (is_array($move) && count($move) === 2) {
+                $formattedTour .= '[' . $move[0] . ',' . $move[1] . ']->';
+            }
+        }
+
+        // Remove the trailing '->'
+        $formattedTour = rtrim($formattedTour, '->');
+
+        return $formattedTour;
     }
 
-    public function formatStartPosition()
+    public function formatStartPosition($startPosition)
     {
-        // formats the tour into to make it database ready
+        if (!is_array($startPosition) || count($startPosition) !== 2) {
+            return '';
+        }
+
+        return implode(',', $startPosition);
+    }
+
+    public function areAllSquaresMarked($playerSolution)
+    {
+        // checks if all squares are marked, by checking the element count in the playerSolution
+        if (!is_array($playerSolution) || count($playerSolution) !== 64) {
+            throw ValidationException::withMessages(['message' => 'Tour incomplete. You still have squares left to cover!']);
+        }
+
+        return true;
     }
 }

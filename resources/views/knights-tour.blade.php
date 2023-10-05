@@ -89,7 +89,7 @@
                                 for ($i = 0; $i < 8; $i++) {
                                     for ($j = 0; $j < 8; $j++) {
                                         $backgroundColor = ($i + $j) % 2 == 0 ? '#9dbda9' : '#4b5d67';
-                                        echo "<div class='cell' id='cell_$i$j' name='cell_$i$j' data-index-zero='$i' data-index-one='$j' style='background-color: $backgroundColor;'></div>";
+                                        echo "<div class='cell' id='cell_${i}_${j}' name='cell_$i$j' data-index-zero='$i' data-index-one='$j' style='background-color: $backgroundColor;'></div>";
                                     }
                                 }
                             @endphp
@@ -105,7 +105,11 @@
                         <hr>
                     </div>
 
-                    <div class="mt-auto mb-4">
+                    <div class="mt-auto">
+                        <button id="btn_autoplay" class="btn btn-lg w-50"
+                            style="background-color: #9dbda9be">AUTOPLAY</button>
+                    </div>
+                    <div class="mt-3 mb-4">
                         <button id="btn_submit" class="btn btn-lg w-50" style="background-color: #9dbda9be">SUBMIT</button>
                     </div>
                 </div>
@@ -122,21 +126,26 @@
         const app = Vue.createApp({
             data() {
                 return {
-                    playerName: '',
                     knightStart: @json($knightStart),
-                    nextValidMoves: '',
-                    chessboard: @json($chessboard),
                     tour: @json($tour),
-                    playerSolution: '',
+                    playerSolution: [@json($knightStart)],
                 };
             },
-            mounted() {
-                const cellId = `#cell_${this.knightStart[0]}${this.knightStart[1]}`;
-                const startCell = document.querySelector(cellId);
-                if (startCell) {
-                    startCell.classList.add('knight');
-                    startCell.classList.add('visited');
+            methods: {
+                initializeBoard() {
+                    const startCellId = `#cell_${this.knightStart[0]}_${this.knightStart[1]}`;
+                    const startCell = document.querySelector(startCellId);
+                    if (startCell) {
+                        startCell.classList.add('knight');
+                        startCell.classList.add('visited');
+                    }
+                },
+                addMovePosition(move) {
+                    this.playerSolution.push(move);
                 }
+            },
+            mounted() {
+                this.initializeBoard();
             }
         });
 
@@ -144,6 +153,7 @@
         const vm = app.mount('#app');
 
         $(document).ready(function() {
+
 
             // event listeners
             // ---------------
@@ -154,6 +164,21 @@
 
             $('#btn_submit').on('click', function() {
                 submitSolution();
+            });
+
+            $('#btn_autoplay').on('click', function() {
+                Swal.fire({
+                    title: 'Auto Play',
+                    text: 'Running auto play will run the knight on its tour for you. Are you sure you want to start the auto play?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        autoPlay();
+                    }
+                });
             });
 
             // functions
@@ -167,9 +192,6 @@
                 let knightCell = $('.knight');
                 let currentKnightIndexZero = parseInt(knightCell.data('index-zero'));
                 let currentKnightIndexOne = parseInt(knightCell.data('index-one'));
-
-                console.log(currentIndexZero, currentIndexOne);
-                console.log(currentKnightIndexZero, currentKnightIndexOne);
 
                 let validMoves = [
                     [currentKnightIndexZero + 2, currentKnightIndexOne + 1],
@@ -197,6 +219,12 @@
                     $(cell).addClass('visited');
                     $(knightCell).removeClass('knight');
                     $(knightCell).addClass('visited');
+
+                    // add the move position to the player solution
+                    let move = [$(cell).data('index-zero'), $(cell).data('index-one')];
+
+                    vm.addMovePosition(move);
+
                 } else {
                     Swal.fire({
                         title: 'Invalid move!',
@@ -208,23 +236,144 @@
 
             }
 
+            // autoplays the game for you. (put this up to demonstrate the algorithm at the VIVA)
+            function autoPlay() {
+
+                let tour = vm.tour;
+
+                if (tour != null) {
+
+                    // first reset the board before you start
+                    resetBoard();
+
+                    for (let moveNum = 1; moveNum <= 63; moveNum++) {
+                        let found = false;
+
+                        // Iterate through the tour to find the index position of the current moveNum
+                        for (let i = 0; i < 8; i++) {
+                            for (let j = 0; j < 8; j++) {
+                                if (tour[i][j] === moveNum) {
+
+                                    // found the cell id !
+                                    const cellId = `cell_${i}_${j}`;
+                                    const cell = $(`#${cellId}`);
+
+                                    // call place knight using the cell
+                                    // Delay each move by 500 milliseconds
+                                    setTimeout(() => {
+                                        placeKnight(cell);
+                                    }, 500 * moveNum);
+
+                                    found = true;
+                                    break;
+                                }
+                            }
+
+                            if (found) {
+                                break;
+                            }
+                        }
+                    }
+
+                } else {
+                    Swal.fire({
+                        title: 'No tour available!',
+                        text: 'Uh oh! Looks like there are no valid tours available for this position. Refresh the page and try again.',
+                        icon: 'error',
+                    });
+                }
+            }
+
+
+            // TODO: set up submit solution function
             function submitSolution() {
 
-                Swal.fire({
-                    title: 'Game over!',
-                    text: 'Oops! You have no valid moves left. Try again?',
-                    icon: 'error',
-                });
+                axios.post('{{ route('assess_knights_tour_solution') }}', {
+                        knightStart: vm.knightStart,
+                        playerSolution: vm.playerSolution,
+                    })
+                    .then(response => {
+                        if (!response.data.solutionIsCorrect) {
+                            Swal.fire({
+                                title: 'Solution incorrect!',
+                                text: 'Please try again',
+                                icon: 'error',
+                            });
+                        } else {
+
+                            Swal.fire({
+                                title: 'Tour complete!',
+                                icon: 'success',
+                                input: 'text',
+                                inputPlaceholder: 'Enter your name',
+                                showCancelButton: true,
+                                confirmButtonText: 'Save',
+                                showLoaderOnConfirm: true,
+                                preConfirm: (inputValue) => {
+                                    return new Promise((resolve, reject) => {
+                                        setTimeout(() => {
+                                            axios.post(
+                                                    '{{ route('submit_knights_tour_solution') }}', {
+                                                        playerName: inputValue,
+                                                        knightStart: vm.knightStart,
+                                                        playerSolution: vm
+                                                            .playerSolution,
+                                                    })
+                                                .then(response => {
+                                                    resolve(response.data);
+                                                    console.log(response.data
+                                                        .message);
+                                                })
+                                                .catch(error => {
+                                                    reject(
+                                                        'Error: Unable to save player data :('
+                                                    );
+                                                });
+                                        }, 1000);
+                                    });
+                                }
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    Swal.fire('Done', 'Your player data was saved successfully',
+                                        'success').then(() => {
+                                        window.location.reload();
+                                    });
+                                }
+                            }).catch((error) => {
+                                Swal.fire('Oops', 'Your player data could not be saved', 'error');
+                            });
+
+                        }
+                    })
+                    .catch(error => {
+
+                        // 400 : ValidationException handling
+                        if (error.response && error.response.status === 400) {
+
+                            let exceptionData = error.response.data;
+
+                            Swal.fire({
+                                title: 'Solution Invalid!',
+                                text: exceptionData.message,
+                                icon: 'error',
+                            });
+                        } else if (error.response) {
+                            // 500 : General exception handling
+                            Swal.fire({
+                                title: 'Something went wrong !',
+                                text: 'Please make sure everything is okay and try again',
+                                icon: 'error',
+                            });
+                        }
+
+                    });
+            }
 
 
-                // axios.post('{{ route('submit_knights_tour_solution') }}', {
-                //         playerName: vm.playerName
-                //     }).then(response => {
-
-                //     })
-                //     .catch(error => {
-                //         console.error(error);
-                //     });
+            // resets the board back to it's original state (remove knight, visits, and reinitialize)
+            function resetBoard() {
+                $('.cell').removeClass('knight visited');
+                vm.initializeBoard();
             }
 
         });

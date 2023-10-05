@@ -106,14 +106,17 @@
                         @foreach (range('A', 'J') as $city)
                             <div class="row mb-2">
                                 <div class="col-md-1 d-flex align-items-center">
-                                    <label class="tiny" for="input1">{{ $city }}</label>
+                                    <label class="tiny" for="txt_dist_{{ $city }}">{{ $city }}</label>
                                 </div>
                                 <div class="col-md-3">
-                                    <input type="number" class="form-control tiny retro-input-dark text-center"
-                                        id="input1">
+                                    <input id="txt_distance_to_{{ $city }}" type="number" min="0"
+                                        step="1" data-target-city="{{ $city }}"
+                                        class="form-control tiny retro-input-dark text-center distance-input">
                                 </div>
                                 <div class="col-md-8">
-                                    <input type="text" class="form-control tiny retro-input-dark" style="width: 100%;">
+                                    <input id="txt_path_to_{{ $city }}" type="text"
+                                        data-target-city="{{ $city }}"
+                                        class="form-control tiny retro-input-dark path-input" style="width: 100%;">
                                 </div>
                             </div>
                         @endforeach
@@ -137,7 +140,8 @@
             data() {
                 return {
                     playerName: '',
-                    playerSolution: [],
+                    cityPaths: [],
+                    cityDistances: [],
                     startCity: @json($startCity),
                     distanceGraph: @json($distanceGraph)
                 };
@@ -161,27 +165,118 @@
             // ---------
 
             function submitSolution() {
+
+                // sets player solutions into the arrays
+                setPlayerSolution();
+
                 axios.post('{{ route('assess_shortest_path_solution') }}', {
-                        playerSolution: vm.playerSolution,
+                        cityPaths: vm.cityPaths,
+                        cityDistances: vm.cityDistances,
                         startCity: vm.startCity,
                         distanceGraph: vm.distanceGraph
                     })
                     .then(response => {
                         if (!response.data.solutionIsCorrect) {
+
+                            // printing the answer so you can use the console to answer it
+                            console.log(response.data.correctSolution);
+
                             Swal.fire({
-                                title: 'Solution incorrect',
+                                title: 'Solution incorrect!',
                                 text: 'Please try again',
                                 icon: 'error',
                             });
+                        } else {
+
+                            Swal.fire({
+                                title: 'Solution is correct !',
+                                icon: 'success',
+                                input: 'text',
+                                inputPlaceholder: 'Enter your name',
+                                showCancelButton: true,
+                                confirmButtonText: 'Save',
+                                showLoaderOnConfirm: true,
+                                preConfirm: (inputValue) => {
+                                    return new Promise((resolve, reject) => {
+                                        setTimeout(() => {
+                                            axios.post(
+                                                    '{{ route('submit_shortest_path_solution') }}', {
+                                                        playerName: inputValue,
+                                                        cityPaths: vm.cityPaths,
+                                                        cityDistances: vm
+                                                            .cityDistances,
+                                                        startCity: vm.startCity,
+                                                    })
+                                                .then(response => {
+                                                    resolve(response.data);
+                                                    console.log(response.data
+                                                        .message);
+                                                })
+                                                .catch(error => {
+                                                    reject(
+                                                        'Error: Unable to save player data :('
+                                                    );
+                                                });
+                                        }, 1000);
+                                    });
+                                }
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    Swal.fire('Done', 'Your player data was saved successfully',
+                                        'success').then(() => {
+                                        window.location.reload();
+                                    });
+                                }
+                            }).catch((error) => {
+                                Swal.fire('Oops', 'Your player data could not be saved', 'error');
+                            });
+
                         }
                     })
                     .catch(error => {
-                        Swal.fire({
-                            title: 'Invalid solution!',
-                            text: 'Please make sure you enter all required data',
-                            icon: 'error',
-                        });
+
+                        // 400 : ValidationException handling
+                        if (error.response && error.response.status === 400) {
+
+                            let exceptionData = error.response.data;
+
+                            Swal.fire({
+                                title: 'Solution Invalid!',
+                                text: exceptionData.message,
+                                icon: 'error',
+                            });
+                        } else if (error.response) {
+                            // 500 : General exception handling
+                            Swal.fire({
+                                title: 'Something went wrong !',
+                                text: 'Please make sure everything is okay and try again',
+                                icon: 'error',
+                            });
+                        }
+
                     });
+            }
+
+            // set the input data into the vue variable
+            function setPlayerSolution() {
+
+                let distances = {};
+                let paths = {};
+
+                $('.distance-input').each(function() {
+                    let targetCity = $(this).data('target-city');
+                    let distance = parseInt($(this).val());
+                    distances[targetCity] = distance;
+                });
+
+                $('.path-input').each(function() {
+                    let targetCity = $(this).data('target-city');
+                    let path = $(this).val();
+                    paths[targetCity] = path;
+                });
+
+                vm.cityPaths = paths;
+                vm.cityDistances = distances;
             }
 
         });

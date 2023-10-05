@@ -100,9 +100,9 @@ class ShortestPathService
         }
 
         $end_time = microtime(true);
-        $execution_time = $end_time - $start_time;
+        $execution_time_ms = ($end_time - $start_time) * 1000;
 
-        return ['distances' => $distances, 'paths' => $paths, 'execution_time' => $execution_time];
+        return ['distances' => $distances, 'paths' => $paths, 'execution_time' => round($execution_time_ms, 5)];
     }
 
     public function bellmanFordShortestPath($startCity)
@@ -145,9 +145,9 @@ class ShortestPathService
         }
 
         $end_time = microtime(true);
-        $execution_time = $end_time - $start_time;
+        $execution_time_ms = ($end_time - $start_time) * 1000;
 
-        return ['distances' => $distances, 'paths' => $paths, 'execution_time' => $execution_time];
+        return ['distances' => $distances, 'paths' => $paths, 'execution_time' => round($execution_time_ms, 5)];
     }
 
     public function pickRandomStartCity()

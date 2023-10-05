@@ -66,4 +66,5 @@ Route::post('/shortest_path/submit_solution', [ShortestPathController::class, 's
 // -------------------
 
 Route::post('/knights_tour/find_tour', [KnightsTourController::class, 'findTour'])->name('find_knights_tour');
+Route::post('/knights_tour/assess_solution', [KnightsTourController::class, 'assessSolution'])->name('assess_knights_tour_solution');
 Route::post('/knights_tour/submit_solution', [KnightsTourController::class, 'submitSolution'])->name('submit_knights_tour_solution');
