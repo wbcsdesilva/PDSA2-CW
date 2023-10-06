@@ -209,10 +209,50 @@
                                                     })
                                                 .then(response => {
                                                     resolve(response.data);
-                                                    console.log(response.data
-                                                        .message);
                                                 })
                                                 .catch(error => {
+
+                                                    // Validation responses at solution submission
+
+                                                    let exceptionData = error
+                                                        .response.data;
+
+                                                    if (error.response && error
+                                                        .response.status ===
+                                                        400 && exceptionData
+                                                        .type ===
+                                                        'VALIDATION_EXCEPTION'
+                                                    ) {
+
+                                                        Swal.fire({
+                                                            title: 'Invalid name!',
+                                                            text: exceptionData
+                                                                .message,
+                                                            icon: 'error',
+                                                        });
+
+                                                    } else if (error.response &&
+                                                        error.response
+                                                        .status === 400 &&
+                                                        exceptionData
+                                                        .type ===
+                                                        'QUERY_EXCEPTION') {
+
+                                                        Swal.fire({
+                                                            title: 'Submission error',
+                                                            text: 'There was an error when trying to submit your data into the database! Please try again',
+                                                            icon: 'error',
+                                                        });
+
+                                                    } else if (error.response) {
+                                                        // 500 : General exception handling
+                                                        Swal.fire({
+                                                            title: 'Oops !',
+                                                            text: 'Something went wrong. Please make sure everything is okay and try again',
+                                                            icon: 'error',
+                                                        });
+                                                    }
+
                                                     reject(
                                                         'Error: Unable to save player data :('
                                                     );
@@ -227,8 +267,6 @@
                                         window.location.reload();
                                     });
                                 }
-                            }).catch((error) => {
-                                Swal.fire('Oops', 'Your player data could not be saved', 'error');
                             });
 
                         }

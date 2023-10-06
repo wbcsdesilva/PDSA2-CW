@@ -76,7 +76,6 @@
         const app = Vue.createApp({
             data() {
                 return {
-                    playerName: '',
                     board: @json($board)
                 };
             },
@@ -114,6 +113,10 @@
                         if (!response.data.gameOver) {
                             vm.board = response.data.board;
                         } else {
+
+                            // disable cell clicks after game over
+                            $('.cell').off('click');
+
                             vm.board = response.data.board;
 
                             if (response.data.winner === 'X') {
@@ -140,7 +143,24 @@
                         }
                     })
                     .catch(error => {
-                        console.error(error);
+                        // 400 : ValidationException handling
+                        if (error.response && error.response.status === 400) {
+
+                            let exceptionData = error.response.data;
+
+                            Swal.fire({
+                                title: 'Solution Invalid!',
+                                text: exceptionData.message,
+                                icon: 'error',
+                            });
+                        } else if (error.response) {
+                            // 500 : General exception handling
+                            Swal.fire({
+                                title: 'Something went wrong !',
+                                text: 'Please make sure everything is okay and try again',
+                                icon: 'error',
+                            });
+                        }
                     });
             }
 

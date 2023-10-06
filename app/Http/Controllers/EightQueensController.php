@@ -24,6 +24,8 @@ class EightQueensController extends Controller
             // validate
             $request->validate([
                 'playerSolution' => 'required|array|size:8',
+            ], [
+                'playerSolution.*' => 'Please place all your queens before you submit!',
             ]);
 
             $playerSolution = $this->formatPlayerSolution($request->playerSolution);
@@ -39,7 +41,6 @@ class EightQueensController extends Controller
                     $this->removeAllSolutionFlags();
                     return response()->json(['solutionAlreadyFound' => false], 200);
                 } else {
-                    $this->removeAllSolutionFlags();
                     return response()->json(['solutionAlreadyFound' => true], 200);
                 }
             } else {
@@ -60,7 +61,6 @@ class EightQueensController extends Controller
             // validate
             $request->validate([
                 'playerName' => 'required|string|max:255|regex:/^[A-Za-z0-9_]+$/',
-                'playerSolution' => 'required|array|size:8',
             ]);
 
             $playerName = $request->input('playerName');
@@ -123,9 +123,12 @@ class EightQueensController extends Controller
 
     private function allSolutionsIdentified()
     {
+        $totalSolutions = EightQueensSolution::where('found', 1)->count();
+        return $totalSolutions === 92;
     }
 
     private function removeAllSolutionFlags()
     {
+        EightQueensSolution::query()->update(['found' => 0]);
     }
 }

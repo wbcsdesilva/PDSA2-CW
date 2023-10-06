@@ -20,8 +20,16 @@ class LCSController extends Controller
 
     public function index()
     {
-        $str1 = $this->LCSService->stringGenRandom();
-        $str2 = $this->LCSService->stringGenRandom();
+        $lcs = '';
+        $str1 = '';
+        $str2 = '';
+
+        // loop till LCS found
+        while ($lcs === '') {
+            $str1 = $this->LCSService->stringGenRandom();
+            $str2 = $this->LCSService->stringGenRandom();
+            $lcs = $this->LCSService->findLCS($str1, $str2);
+        }
 
         return view('longest-common-sequence', compact('str1', 'str2'));
     }
@@ -32,9 +40,9 @@ class LCSController extends Controller
 
             // validate
             $request->validate([
-                'str1' => 'required|string|alpha|max:10',
-                'str2' => 'required|string|alpha|max:10',
-                'playerSolution' => 'required|string|alpha|max:10',
+                'str1' => 'required|string|alpha',
+                'str2' => 'required|string|alpha',
+                'playerSolution' => 'required|string|alpha',
             ]);
 
             $str1 = $request->input('str1');
@@ -61,10 +69,7 @@ class LCSController extends Controller
         try {
 
             $request->validate([
-                'str1' => 'required',
-                'str2' => 'required',
                 'playerName' => 'required|string|max:255|regex:/^[A-Za-z0-9_]+$/',
-                'playerSolution' => 'required',
             ]);
 
             $str1 = $request->input('str1');;
@@ -91,8 +96,16 @@ class LCSController extends Controller
 
     public function rerollStrings()
     {
-        $str1 = $this->LCSService->stringGenRandom();
-        $str2 = $this->LCSService->stringGenRandom();
+        $lcs = '';
+        $str1 = '';
+        $str2 = '';
+
+        // loop till LCS found
+        while ($lcs === '') {
+            $str1 = $this->LCSService->stringGenRandom();
+            $str2 = $this->LCSService->stringGenRandom();
+            $lcs = $this->LCSService->findLCS($str1, $str2);
+        }
 
         return response()->json(compact('str1', 'str2'), 200);
     }

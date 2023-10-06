@@ -18,16 +18,17 @@ class KnightsTourController extends Controller
         $this->knightsTourService = new KnightsTourService();
     }
 
+    // view game page
     public function index()
     {
 
         $knightStart = $this->knightsTourService->pickRandomStartPosition();
         $tour = $this->knightsTourService->findTour($knightStart[0], $knightStart[1]);
-        $chessboard = $this->knightsTourService->getBoard();
 
-        return view('knights-tour', compact('tour', 'chessboard', 'knightStart'));
+        return view('knights-tour', compact('tour', 'knightStart'));
     }
 
+    // check if solution is valid and correct
     public function assessSolution(Request $request)
     {
         try {
@@ -43,6 +44,7 @@ class KnightsTourController extends Controller
         }
     }
 
+    // submit player solution into the database
     public function submitSolution(Request $request)
     {
         try {
@@ -56,6 +58,7 @@ class KnightsTourController extends Controller
             $knightStartPosition = $this->formatStartPosition($request->input('knightStart'));
             $playerSolution = $this->formatTour($request->input('playerSolution'));
 
+            // create database record
             KnightsTourPlayerSubmission::create([
                 'player_name' => $playerName,
                 'knight_start_position' => $knightStartPosition,

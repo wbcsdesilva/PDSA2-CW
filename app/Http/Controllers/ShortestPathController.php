@@ -69,6 +69,10 @@ class ShortestPathController extends Controller
     {
         try {
 
+            $request->validate([
+                'playerName' => 'required|string|max:255|regex:/^[A-Za-z0-9_]+$/',
+            ]);
+
             // game data
             $playerName = $request->input('playerName');
             $startCity = $request->input('startCity');
