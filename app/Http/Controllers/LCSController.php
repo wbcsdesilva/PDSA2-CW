@@ -13,9 +13,9 @@ class LCSController extends Controller
 {
     private $LCSService;
 
-    public function __construct(LCSService $LCSService)
+    public function __construct()
     {
-        $this->LCSService = $LCSService;
+        $this->LCSService = new LCSService();
     }
 
     public function index()

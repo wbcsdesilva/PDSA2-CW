@@ -132,6 +132,7 @@
                 };
             },
             methods: {
+                // places the knight on start position on page load
                 initializeBoard() {
                     const startCellId = `#cell_${this.knightStart[0]}_${this.knightStart[1]}`;
                     const startCell = document.querySelector(startCellId);
@@ -221,7 +222,6 @@
                     $(cell).addClass('knight');
                     $(cell).addClass('visited');
                     $(knightCell).removeClass('knight');
-                    $(knightCell).addClass('visited');
 
                     // add the move position to the player solution
                     let move = [$(cell).data('index-zero'), $(cell).data('index-one')];
@@ -326,7 +326,7 @@
                                                 })
                                                 .catch(error => {
 
-                                                    // Validation responses at solution submission
+                                                    // Validation responses at solution submission (saving to database)
 
                                                     let exceptionData = error
                                                         .response.data;
@@ -347,11 +347,11 @@
 
                                                     } else if (error.response &&
                                                         error.response
-                                                        .status === 400 &&
+                                                        .status === 500 &&
                                                         exceptionData
                                                         .type ===
                                                         'QUERY_EXCEPTION') {
-
+                                                        // 500 : Query exception handling
                                                         Swal.fire({
                                                             title: 'Submission error',
                                                             text: 'There was an error when trying to submit your data into the database! Please try again',
@@ -387,6 +387,7 @@
                     })
                     .catch(error => {
 
+                        // Validation responses at solution assessment
                         // 400 : ValidationException handling
                         if (error.response && error.response.status === 400) {
 

@@ -13,9 +13,9 @@ class TicTacToeController extends Controller
 {
     protected $ticTacToeService;
 
-    public function __construct(TicTacToeService $ticTacToeService)
+    public function __construct()
     {
-        $this->ticTacToeService = $ticTacToeService;
+        $this->ticTacToeService = new TicTacToeService();
     }
 
     public function index()
@@ -93,6 +93,7 @@ class TicTacToeController extends Controller
         }
     }
 
+    // TODO: Complete the format game function here
     public function formatGame()
     {
     }

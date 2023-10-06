@@ -13,9 +13,9 @@ class ShortestPathController extends Controller
 {
     protected $shortestPathService;
 
-    public function __construct(ShortestPathService $shortestPathService)
+    public function __construct()
     {
-        $this->shortestPathService = $shortestPathService;
+        $this->shortestPathService = new ShortestPathService();
     }
 
     public function index()
@@ -163,7 +163,7 @@ class ShortestPathController extends Controller
         foreach ($paths as $city => $path) {
             if ($path === null) {
                 throw ValidationException::withMessages([
-                    'message' => ['Paths missing! Plese provide a path to the city ' . $city],
+                    'message' => ['Paths missing! Please provide a path to the city ' . $city],
                 ]);
             } elseif (preg_match('/^[A-Z](->[A-Z])*$/', $path) !== 1) {
                 throw ValidationException::withMessages([

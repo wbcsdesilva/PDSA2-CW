@@ -48,7 +48,6 @@
         const app = Vue.createApp({
             data() {
                 return {
-                    playerName: '',
                     playerSolution: '',
                     str1: @json($str1),
                     str2: @json($str2),
@@ -191,7 +190,7 @@
                         }
                     })
                     .catch(error => {
-
+                        // Validation responses at solution assessment
                         // 400 : ValidationException handling
                         if (error.response && error.response.status === 400) {
 

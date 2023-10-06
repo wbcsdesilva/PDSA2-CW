@@ -128,7 +128,6 @@
         const app = Vue.createApp({
             data() {
                 return {
-                    playerName: '',
                     queensLeft: 8,
                     queenPositions: []
                 };

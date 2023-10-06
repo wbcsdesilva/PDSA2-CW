@@ -139,7 +139,6 @@
         const app = Vue.createApp({
             data() {
                 return {
-                    playerName: '',
                     cityPaths: [],
                     cityDistances: [],
                     startCity: @json($startCity),

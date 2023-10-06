@@ -54,6 +54,7 @@
 
             <h3>Tic Tac Toe</h3>
 
+            {{-- //TODO: Add a submit button when player wins the game  --}}
             <div id="board" class="tic-tac-toe-board border-retro-dark">
 
                 @for ($i = 0; $i < 3; $i++)
@@ -162,6 +163,12 @@
                             });
                         }
                     });
+            }
+
+
+            // TODO: Complete the submit game function from the frontend
+            function submitGame() {
+
             }
 
         });
