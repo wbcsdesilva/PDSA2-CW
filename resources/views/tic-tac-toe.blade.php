@@ -44,6 +44,10 @@
             border-width: 5px;
             border-color: #4b5d67
         }
+
+        .invisible {
+            display: none;
+        }
     </style>
 
 
@@ -54,7 +58,6 @@
 
             <h3>Tic Tac Toe</h3>
 
-            {{-- //TODO: Add a submit button when player wins the game  --}}
             <div id="board" class="tic-tac-toe-board border-retro-dark">
 
                 @for ($i = 0; $i < 3; $i++)
@@ -65,7 +68,11 @@
                         </div>
                     @endfor
                 @endfor
+            </div>
 
+            {{-- visible only after player win --}}
+            <div class="mt-3 mb-4">
+                <button id="btn_submit" class="btn btn-lg w-50 invisible" style="background-color: #9dbda9be">SUBMIT</button>
             </div>
 
         </div>
@@ -99,6 +106,9 @@
                 makeMove(this);
             });
 
+            $('#btn_submit').on('click', function() {
+                submitGame();
+            });
 
             // makes a move on the baord
             function makeMove(cell) {
@@ -126,12 +136,18 @@
                                     text: 'Yay!',
                                     icon: 'success',
                                 });
+
+                                // remove invisibility from the submit button when the player wins
+                                $('#btn_submit').removeClass('invisible').css('display', '');
+
                             } else if (response.data.winner === 'O') {
+
                                 Swal.fire({
                                     title: 'You lost!',
                                     text: 'Game over',
                                     icon: 'error',
                                 });
+
                             } else {
                                 Swal.fire({
                                     title: 'Draw!',
@@ -166,9 +182,86 @@
             }
 
 
-            // TODO: Complete the submit game function from the frontend
             function submitGame() {
 
+                Swal.fire({
+                    title: 'Submit your game',
+                    icon: 'success',
+                    input: 'text',
+                    inputPlaceholder: 'Enter your name',
+                    showCancelButton: true,
+                    confirmButtonText: 'Save',
+                    showLoaderOnConfirm: true,
+                    preConfirm: (inputValue) => {
+                        return new Promise((resolve, reject) => {
+                            setTimeout(() => {
+                                axios.post(
+                                        '{{ route('submit_tic_tac_toe_game') }}', {
+                                            board: vm
+                                                .board,
+                                            playerName: inputValue
+                                        })
+                                    .then(response => {
+                                        resolve(response.data);
+                                    })
+                                    .catch(error => {
+
+                                        // Validation responses at solution submission
+
+                                        let exceptionData = error
+                                            .response.data;
+
+                                        if (error.response && error
+                                            .response.status ===
+                                            400 && exceptionData
+                                            .type ===
+                                            'VALIDATION_EXCEPTION'
+                                        ) {
+
+                                            Swal.fire({
+                                                title: 'Invalid name!',
+                                                text: exceptionData
+                                                    .message,
+                                                icon: 'error',
+                                            });
+
+                                        } else if (error.response &&
+                                            error.response
+                                            .status === 400 &&
+                                            exceptionData
+                                            .type ===
+                                            'QUERY_EXCEPTION') {
+
+                                            Swal.fire({
+                                                title: 'Submission error',
+                                                text: 'There was an error when trying to submit your data into the database! Please try again',
+                                                icon: 'error',
+                                            });
+
+                                        } else if (error.response) {
+                                            // 500 : General exception handling
+                                            Swal.fire({
+                                                title: 'Oops !',
+                                                text: 'Something went wrong. Please make sure everything is okay and try again',
+                                                icon: 'error',
+                                            });
+                                        }
+
+                                        reject(
+                                            'Error: Unable to save player data :('
+                                        );
+                                    });
+                            }, 1000);
+                        });
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire('Done', 'Your player data was saved successfully',
+                            'success').then(() => {
+                            window.location.reload();
+                        });
+                    }
+                });
             }
 
         });

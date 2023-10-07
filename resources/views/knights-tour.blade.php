@@ -246,6 +246,9 @@
 
                 if (tour != null) {
 
+                    // disable cell clicks
+                    $('.cell').off('click');
+
                     // first reset the board before you start
                     resetBoard();
 
@@ -277,6 +280,13 @@
                             }
                         }
                     }
+
+                    // re enable cell clicks after autoplay
+                    setTimeout(() => {
+                        $('.cell').on('click', function() {
+                            placeKnight(this);
+                        });
+                    }, 500 * 63);
 
                 } else {
                     Swal.fire({

@@ -68,13 +68,13 @@ class TicTacToeController extends Controller
 
             // validate
             $request->validate([
-                'playerSquares' => 'required',
-                'computerSquares' => 'required',
                 'playerName' => 'required|string|max:255|regex:/^[A-Za-z0-9_]+$/',
             ]);
 
-            $playerSquares = $this->formatGame($request->input('computerSquares'), 'X');
-            $computerSquares = $this->formatGame($request->input('computerSquares'), 'O');
+            $board = $request->input('board');
+
+            $playerSquares = $this->formatGame($board, 'X');
+            $computerSquares = $this->formatGame($board, 'O');
             $playerName = $request->input('playerName');
 
             TicTacToePlayerSubmission::create([
@@ -93,8 +93,22 @@ class TicTacToeController extends Controller
         }
     }
 
-    // TODO: Complete the format game function here
-    public function formatGame()
+    public function formatGame($game, $player)
     {
+        $formattedGame = "";
+
+        foreach ($game as $row) {
+            $formattedGame .= "[";
+            foreach ($row as $cell) {
+                if ($cell === $player) {
+                    $formattedGame .= $player;
+                } else {
+                    $formattedGame .= "_";
+                }
+            }
+            $formattedGame .= "]";
+        }
+
+        return $formattedGame;
     }
 }
