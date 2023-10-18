@@ -36,32 +36,6 @@ class KnightsTourService
         return $this->chessboard = $board;
     }
 
-
-    // start finding a valid tour
-    public function findTour($startRow, $startCol)
-    {
-        $this->chessboard[$startRow][$startCol] = 0;
-
-        for ($moveNumber = 1; $moveNumber < $this->boardSize * $this->boardSize; $moveNumber++) {
-            $nextMoves = $this->getNextMoves($startRow, $startCol);
-            if (empty($nextMoves)) {
-                // No solution exists
-                return null;
-            }
-
-            // Warnsdorff's hueristic used to optimize the solution
-            // usorts the moves in order of which leads to dead ends faster
-            usort($nextMoves, function ($a, $b) use ($startRow, $startCol) {
-                return count($this->getNextMoves($a[0], $a[1])) - count($this->getNextMoves($b[0], $b[1]));
-            });
-
-            [$startRow, $startCol] = $nextMoves[0];
-            $this->chessboard[$startRow][$startCol] = $moveNumber;
-        }
-
-        return $this->chessboard;
-    }
-
     // gets next valid moves
     private function getNextMoves($row, $col)
     {
@@ -93,5 +67,52 @@ class KnightsTourService
         $startCol = rand(0, $this->boardSize - 1);
 
         return [$startRow, $startCol];
+    }
+
+
+    // Initiate backtracking :
+    public function findTour($startRow, $startCol)
+    {
+        $this->chessboard[$startRow][$startCol] = 0;
+
+        if ($this->findTourRecursive($startRow, $startCol, 1)) {
+            return $this->chessboard;
+        } else {
+            // No solution exists
+            return null;
+        }
+    }
+
+    // Recursively backtrack with Warnsdorff's huerestic for optmization
+    private function findTourRecursive($row, $col, $moveNumber)
+    {
+        if ($moveNumber === $this->boardSize * $this->boardSize) {
+            return true; // Tour completed successfully
+        }
+
+        $nextMoves = $this->getNextMoves($row, $col);
+
+        // Sort the moves based on Warnsdorff's heuristic
+        usort($nextMoves, function ($a, $b) use ($row, $col) {
+            return count($this->getNextMoves($a[0], $a[1])) - count($this->getNextMoves($b[0], $b[1]));
+        });
+
+        foreach ($nextMoves as $move) {
+            [$nextRow, $nextCol] = $move;
+
+            if ($this->isSafeMove($nextRow, $nextCol)) {
+                $this->chessboard[$nextRow][$nextCol] = $moveNumber;
+
+                if ($this->findTourRecursive($nextRow, $nextCol, $moveNumber + 1)) {
+                    return true;
+                } else {
+                    // Backtrack if no solution found from this move
+                    $this->chessboard[$nextRow][$nextCol] = -1;
+                }
+            }
+        }
+
+        // No solution found from the position
+        return false;
     }
 }

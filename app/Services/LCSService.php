@@ -31,6 +31,8 @@ class LCSService
         $lcs = '';
         $i = $m;
         $j = $n;
+
+        // in reverse
         while ($i > 0 && $j > 0) {
             if ($str1[$i - 1] == $str2[$j - 1]) {
                 $lcs = $str1[$i - 1] . $lcs;

@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use SplPriorityQueue;
+
 // Shortest Path Service Service
 // -----------------------------
 
@@ -47,40 +49,35 @@ class ShortestPathService
     public function dijkstraShortestPath($startCity)
     {
         $distances = [];
-        $previousNodes = []; // for path tracking
-        $visited = [];
+        $previousNodes = [];
+        $pq = new SplPriorityQueue();
         $cities = array_keys($this->graph);
 
         foreach ($cities as $city) {
             $distances[$city] = INF;
-            $visited[$city] = false;
+            $previousNodes[$city] = null;
         }
 
         $distances[$startCity] = 0;
+        $pq->insert(new Node($startCity, 0), 0);
 
         $start_time = microtime(true);
 
-        for ($i = 0; $i < count($cities); $i++) {
-            $minDistance = INF;
-            $currentCity = null;
+        while (!$pq->isEmpty()) {
+            $currentNode = $pq->extract();
+            $currentCity = $currentNode->city;
+            $currentDistance = $currentNode->distance;
 
-            foreach ($cities as $city) {
-                if (!$visited[$city] && $distances[$city] < $minDistance) {
-                    $minDistance = $distances[$city];
-                    $currentCity = $city;
-                }
+            if ($currentDistance > $distances[$currentCity]) {
+                continue;
             }
-
-            if ($currentCity === null) {
-                break;
-            }
-
-            $visited[$currentCity] = true;
 
             foreach ($this->graph[$currentCity] as $neighbor => $weight) {
-                if (!$visited[$neighbor] && $distances[$currentCity] + $weight < $distances[$neighbor]) {
-                    $distances[$neighbor] = $distances[$currentCity] + $weight;
+                $newDistance = $currentDistance + $weight;
+                if ($newDistance < $distances[$neighbor]) {
+                    $distances[$neighbor] = $newDistance;
                     $previousNodes[$neighbor] = $currentCity;
+                    $pq->insert(new Node($neighbor, $newDistance), -$newDistance);
                 }
             }
         }
@@ -91,7 +88,7 @@ class ShortestPathService
             $path = $destinationCity;
             $currentCity = $destinationCity;
 
-            while (isset($previousNodes[$currentCity])) {
+            while ($previousNodes[$currentCity] !== null) {
                 $path = $previousNodes[$currentCity] . '->' . $path;
                 $currentCity = $previousNodes[$currentCity];
             }
@@ -156,5 +153,19 @@ class ShortestPathService
         $randomIndex = array_rand($cities);
 
         return $cities[$randomIndex];
+    }
+}
+
+// node class : for dijikstra's use
+
+class Node
+{
+    public $city;
+    public $distance;
+
+    public function __construct($city, $distance)
+    {
+        $this->city = $city;
+        $this->distance = $distance;
     }
 }
